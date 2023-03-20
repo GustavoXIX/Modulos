@@ -1,0 +1,19 @@
+#school_banner {
+    height: 200px;
+    background-color: rgb(255, 92, 71);
+    padding: 10px;
+    color: white;
+    text-align: left;
+
+}
+
+.course_button{
+    -webkit-tap-highlight-color: transparent;
+    color: white !important; 
+    box-sizing: border-box;
+    border-radius: 3px;
+    border: 1px solid #e9ecef;
+    display: inline-block;
+    text-align: center;
+    
+}

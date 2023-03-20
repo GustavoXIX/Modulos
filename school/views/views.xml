@@ -1,0 +1,261 @@
+<odoo>
+  <data>
+    <!-- vista en forma de lista o arbol del modelo estudiante -->
+
+    <record model="ir.ui.view" id="school.list">
+      <field name="name">school list</field>
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+        <tree decoration-success="age>0" decoration-danger ="age&lt;18"  >
+          <field name="name"/>
+          <field name="surname"/>
+
+          <field name="age" avg="Media"/>
+         
+
+        </tree>
+      </field>
+    </record>
+
+    <!-- vista en forma de lista o arbol del modelo clase -->
+    <record model="ir.ui.view" id="school.list_2">
+      <field name="name">school list</field>
+      <field name="model">school.classroom</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+         
+        </tree>
+      </field>
+    </record>
+
+    <!-- vista en forma de lista o arbol del modelo profesor -->
+
+    <record model="ir.ui.view" id="school.list_3">
+      <field name="name">school list</field>
+      <field name="model">school.teacher</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- Modelo kanban del modelo estudiante-->
+
+    <record model="ir.ui.view" id="school.student_kanban">
+      <field name="name">school student kanban</field>
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+      <!--Ordenados por clase  -->
+        <kanban default_order="subject_id" >
+          <field name="id"></field>
+          <field name="subject_id"></field> 
+          <templates>
+            <t t-name="kanban-box">
+            <!--Aplicamos css para -->
+              <div t-attf-class="oe_kanban_color_{{kanban_getcolor(record.subject_id.raw_value)}}
+              eo_kanban_global_click o_kanban_has_image_fill">
+               <a type="open">
+                  <!-- La funcion kanban_imagen, va al modelo, al campo y necesita el id del registro
+                  Por eso necesitamos el campo id-->
+                  <img class="oe_kanban_image" alt="alumno"
+                  t-att-src="kanban_image('school.student', 'photo', record.id.value)"/>
+                </a>  
+                <div t-attr-class="oe_kanban_content">
+                  <h4>
+                    <a type="edit">
+                      <field name="name"/>
+                      <field name="surname"/>
+                    </a>
+                  </h4>
+                  <ul>
+                    <li>Classroom: <field name="subject_id"></field> </li>
+                  </ul>  
+                </div>  
+                
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+  <!-- modifico la vista formulario del modelo estudiante -->
+
+    <record model="ir.ui.view" id="school.student_form">
+      <field name="name">school student form</field>
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <field name="state" widget="statusbar"> </field>
+          </header>  
+
+          <sheet>
+            
+            <div class="oe_button_box">
+              <button name="regenerar" class ="oe_stat_button" type="object" icon="fa-address-book" string="Regenerar password">
+              </button>
+            </div>
+
+            <field name="photo" widget="image"/>
+
+            <group>
+              <group>
+                <!--<separator style="color:green" string="Datos personales"></separator> -->
+                <separator class="text-muted" string="Datos personales"></separator>
+                
+                <field name="name"/>
+                <field name="surname"/>
+                <field name="birthday" />
+                <!-- oculta el campo edad en el estado 2 -->
+                <field name="age" attrs="{'invisible':[('state','=','2')]}"/>
+                <!-- otras opciones de los compos dinamicos
+                  required
+                  readonly -->
+
+                <field name="gender" widget="radio"/>
+                <!-- <field name="state" /> -->
+                       
+              </group>
+              <!-- Se muestra solo en los estudiante -->
+              <group>  <!-- states="2" -->
+                <separator string="Datos matricula"></separator>
+                <field name="level"/>
+                <field name="subject_id" />
+                <field name="province"/>
+                <field name="password"/>
+             
+              </group>
+            </group>
+          
+          </sheet>  
+        </form>
+      </field>
+    </record>
+
+    <!--Vista graph de estudiantes-->
+    
+     <record model="ir.ui.view" id="school.graph">
+      <field name="name">school graph</field>
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+
+        <graph string="Gráfico de edades" type="pie"> <!-- grafico por defecto -->
+          <field name="name" />
+          <field name="age" type="measure"/>
+        </graph>
+
+      </field>
+    </record>
+   
+
+    <!--Vista search de estudiantes-->
+    <record model="ir.ui.view" id="school.search">
+      <field name="name">school search</field>
+      <field name="model">school.student</field>
+      <field name="arch" type="xml">
+        <search  >
+          <field name="name"/>
+          <field name="surname"/>
+          <field name="age"/>
+          <!-- filtro dinamico -->
+          <field name="age" string="Edad menor a" filter_domain="[('age','&lt;',self)]"/>
+          <field name="age" string="Edad mayor a" filter_domain="[('age','>',self)]"/>
+          <!-- filtro fijo -->
+          <filter name="Menores" string="Menores de edad" domain="[('age','&lt;',18)]"></filter>
+          <filter name="Mayores" string="Mayores de edad" domain="[('age','>=',18)]"></filter>
+          <!-- agrupacion por clases -->
+          <filter name="Agrupar por nivel" string="Agrupar por nivel" context="{'group_by': 'level' }"></filter>
+
+        </search>
+      </field>
+    </record>
+    <!--Vista calendario de seminario-->
+
+    <record model="ir.ui.view" id="school.seminario_calendar">
+      <field name="name">school seminario calendar</field>
+      <field name="model">school.seminario</field>
+      <field name="arch" type="xml">
+        <calendar string="Calendario de Seminario" date_start="start"
+                  date_stop="finish"
+                  color="teachers">
+          <field name="name"/>
+        </calendar>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="school.action_window">
+      <field name="name">Ventana de estudiantes</field>
+      <field name="res_model">school.student</field>
+      <!--  vistas disponibles del modelo estudiante 
+              kanban
+              search
+              -->
+      <field name="view_mode">tree,form,kanban,graph,search</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="school.action_window_2">
+      <field name="name">Ventana de clases</field>
+      <field name="res_model">school.classroom</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="school.action_window_3">
+      <field name="name">Ventana de profesores</field>
+      <field name="res_model">school.teacher</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="school.action_window_4">
+      <field name="name">Ventana de seminario</field>
+      <field name="res_model">school.seminario</field>
+      <field name="view_mode">tree,form,calendar</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="school.action_server">
+      <field name="name">school server</field>
+      <field name="model_id" ref="model_school_school"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu principal-->
+
+    <menuitem name="Escuela" id="school.menu_root"/>
+
+    <!-- menu categorias -->
+
+    <menuitem name="Apartados" id="school.menu_1" parent="school.menu_root"/>
+
+    <!-- actions -->
+
+    <menuitem name="Estudiantes" id="school.menu_1_list" parent="school.menu_1"
+              action="school.action_window"/>
+    <menuitem name="Clases" id="school.menu_2_list" parent="school.menu_1"
+              action="school.action_window_2"/>
+    <menuitem name="Profesores" id="school.menu_3_list" parent="school.menu_1"
+              action="school.action_window_3"/>
+   
+    <!-- Acceso a seminario -->
+    
+    <menuitem name="Seminario" id="school.menu_4_list" parent="school.menu_1"
+              action="school.action_window_4"/>          
+
+  </data>
+</odoo>

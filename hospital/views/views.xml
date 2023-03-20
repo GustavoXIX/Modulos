@@ -1,0 +1,229 @@
+<odoo>
+  <data>
+
+      
+                   <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="hospital.action_window">
+      <field name="name">Ventana de pacientes</field>
+      <field name="res_model">hospital.paciente</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="hospital.action_window_2">
+      <field name="name">Ventana de doctores</field>
+      <field name="res_model">hospital.doctores</field>
+      <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="hospital.action_window_3">
+      <field name="name">Ventana de ingresos</field>
+      <field name="res_model">hospital.ingreso</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+  <!-- Top menu principal-->
+
+        <menuitem name="Hospital" id="hospital.menu_root"/>
+
+        <!-- menu categorias -->
+    
+        <menuitem name="Apartados" id="hospital.menu_1" parent="hospital.menu_root"/>
+    
+        <!-- actions -->
+    
+        <menuitem name="Pacientes" id="hospital.menu_1_list" parent="hospital.menu_1"
+                  action="hospital.action_window"/>
+        <menuitem name="Doctores" id="hospital.menu_2_list" parent="hospital.menu_1"
+                  action="hospital.action_window_2"/>
+        <menuitem name="Ingresos" id="hospital.menu_3_list" parent="hospital.menu_1"
+                  action="hospital.action_window_3"/>
+   
+
+    <!-- Modelo kanban del modelo estudiante-->
+
+    <record model="ir.ui.view" id="hospital.student_kanban">
+      <field name="name">hospital doctores kanban</field>
+      <field name="model">hospital.doctores</field>
+      <field name="arch" type="xml">
+      <!--Ordenados por clase  -->
+        <kanban default_order="name" >
+          <field name="id"></field>
+          <field name="name"></field> 
+          <templates>
+            <t t-name="kanban-box">
+            <!--Aplicamos css para -->
+              <div t-attf-class="oe_kanban_color_{{kanban_getcolor(record.name.raw_value)}}
+              eo_kanban_global_click o_kanban_has_image_fill">
+               <a type="open">
+                  <!-- La funcion kanban_imagen, va al modelo, al campo y necesita el id del registro
+                  Por eso necesitamos el campo id-->
+                  <img class="oe_kanban_image" alt="doctor"
+                  t-att-src="kanban_image('hospital.doctores', 'photo', record.id.value)"/>
+                </a>  
+                <div t-attr-class="oe_kanban_content">
+                  <h4>
+                    <a type="edit">
+                      <field name="name"/>
+                      <field name="surname"/>
+                    </a>
+                  </h4>
+                  <ul>
+                    <li>Doctores: <field name="name"></field> </li>
+                  </ul>  
+                </div>  
+                
+              </div>
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+
+
+    
+
+   <!-- lista de paciente -->
+    <record model="ir.ui.view" id="hospital.list">
+      <field name="name">hospital list</field>
+      <field name="model">hospital.paciente</field>
+      <field name="arch" type="xml">
+        <tree banner_route="/hospital/paciente">
+          <field name="name"/>
+          <field name="surname"/>
+          <field name="city"/>
+        </tree>
+      </field>
+    </record>
+ 
+   <!-- lista de doctores -->
+    <record model="ir.ui.view" id="hospital.list">
+      <field name="name">hospital list</field>
+      <field name="model">hospital.doctores</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="surname"/>
+          <field name="phone"/>
+          <field name="photo" widget="image"/>
+        </tree>
+      </field>
+    </record>
+ 
+   <!-- lista de ingresos -->
+    <record model="ir.ui.view" id="hospital.list">
+      <field name="name">hospital list</field>
+      <field name="model">hospital.ingreso</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="f_ingreso"/>
+          <field name="salida"/>
+          <field name="doctor_id"/>
+          <field name="patience_id"/>
+        </tree>
+      </field>
+    </record>
+ 
+   <!-- lista de diagnosticos -->
+    <record model="ir.ui.view" id="hospital.list">
+      <field name="name">hospital list</field>
+      <field name="model">hospital.diagnostico</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="diagnostico"/>
+          <field name="fecha"/>
+        </tree>
+      </field>
+    </record>
+
+
+
+    <!--vista wizard-->
+
+    <record model="ir.ui.view" id="hospital.paciente_wizard_form">
+      <field name="name">paciente wizard form</field>
+      <field name="model">hospital.paciente_wizard</field>
+      <field name="arch" type="xml">
+        <form>
+          <!-- header mostrando lo botones cuando es necesario -->
+          <header>
+            <button name="previous" type="object"
+                    string="Previous" class="btn btn-secondary" states="2,3,4"/>
+            <button name="next" type="object"
+                    string="Next" class="btn oe_highlight" states="1,2,3"/>
+            <field name="state" widget="statusbar"/>
+          </header>
+
+          <sheet>
+            <!-- estados en los que se muestra, y en el que se puede modificar -->
+            <group states="1,2,3,4">
+              <field name="name"  attrs="{'readonly':[('state','!=','1')]}"/>
+            </group>
+
+            <!-- mostrado en estado 2 -->
+            <group col="5" string="Ingresos" states="2">
+              <field name="symtomps"/>
+              <field name="f_ingreso"/>
+              <field name="f_salida"/>
+              <button name="add_ingreso" type="object"
+                      string="Add ingreso" class="oe_highlight"></button>
+            </group>
+
+            <!-- mostrado en estado 3 -->
+            <group col="7" string="Doctores" states="3">
+              <field name="d_name"/>
+              <field name="d_surname"/>
+              <button name="add_doctores" type="object"
+                  string="Add doctores" class="oe_highlight"></button>
+            </group>
+            <!-- mostrado en estado 2 la relacion many2many-->
+            <group states="3">
+              <field name="doctores">
+                <tree editable="bottom">
+                  <field name="name"/>
+                  <field name="surname"/>
+                </tree>
+              </field>
+            </group>
+
+            <!-- Mostramos todos los estudiantes, en estado 4 -->
+            <group states="4" string="All Doctores">
+              <field name="doctores" >
+                <tree editable="bottom">
+                  <field name="name"/>
+                  <field name="surname"/>
+                </tree>
+              </field>
+            </group>
+
+            <!-- boton de commit para actualizar las vistas, solo en state=4 -->
+            <button name="commit" type="object"
+                        string="Commit" class="oe_highlight" states="4"/>
+            
+            <!-- pie de pagina con la opcion cancelar y crear -->
+            <footer>
+              <button name="create_paciente" type="object"
+                  string="Create" class="oe_highlight" states="4"/>
+              <button special="cancel" string="Cancel"/>
+            </footer>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+     <!-- accion wizard -->
+     <record model="ir.actions.act_window" id="hospital.action_paciente_wizard">
+      <field name="name">Asistente crear curso</field>
+      <field name="res_model">hospital.paciente_wizard</field>
+      <field name="view_mode">form</field>
+      <field name="type">ir.actions.act_window</field> 
+      <field name="view_id" ref="hospital.paciente_wizard_form" />
+      <field name="target">new</field>   
+    </record>
+   
+ 
+    
+  </data>
+</odoo>

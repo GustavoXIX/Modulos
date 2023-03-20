@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_school_student_conserje,school.student,model_school_student,grupo_secretaria,1,1,1,1
+access_school_classroom_conserje,school.classroom,model_school_classroom,grupo_secretaria,1,1,1,1
+access_school_teacher_conserje,school.teacher,model_school_teacher,grupo_secretaria,1,1,1,1
+access_school_seminario_conserje,school.seminario,model_school_seminario,grupo_secretaria,1,1,1,1
+access_school_student,school.student,model_school_student,grupo_conserjes,1,0,0,0
+access_school_classroom,school.classroom,model_school_classroom,grupo_conserjes,1,1,0,0,0
+access_school_teacher,school.teacher,model_school_teacher,grupo_conserjes,1,0,0,0
+access_school_seminario,school.seminario,model_school_seminario,grupo_conserjes,1,0,0,0
